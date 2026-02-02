@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cheese Chase | Awesome Cheese Mouse</title>
+    <style>
+        :root {
+            --cheese-yellow: #ffcc00;
+            --cheese-orange: #ff9900;
+            --bg-dark: #1a1a1a;
+            --text-light: #f0f0f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: 600px;
+            margin: 0 auto;
+            background: radial-gradient(circle, #2c2c2c 0%, #1a1a1a 100%);
+            border-left: 2px solid #333;
+            border-right: 2px solid #333;
+            overflow: hidden;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .stat {
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        #score-val { color: var(--cheese-yellow); }
+        #lives-val { color: #ff4444; }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0,0,0,0.85);
+            z-index: 20;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 48px;
+            color: var(--cheese-yellow);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+        }
+
+        p { font-size: 18px; margin-bottom: 30px; }
+
+        button {
+            padding: 15px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            background: var(--cheese-orange);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 4px 15px rgba(255, 153, 0, 0.4);
+        }
+
+        button:active { transform: scale(0.95); }
+
+        .cheese {
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.1s;
+            filter: drop-shadow(0 0 10px rgba(255, 204, 0, 0.3));
+        }
+
+        /* The SVG Cheese shape */
+        .cheese-wedge {
+            fill: var(--cheese-yellow);
+        }
+
+        .hole {
+            fill: var(--cheese-orange);
+            opacity: 0.6;
+        }
+
+        .hidden { display: none !important; }
+
+        #high-score-display {
+            font-size: 14px;
+            margin-top: 15px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="ui-layer">
+        <div class="stat">CHEESE: <span id="score-val">0</span></div>
+        <div class="stat">LIVES: <span id="lives-val">❤❤❤</span></div>
+    </div>
+
+    <div id="start-screen" class="screen">
+        <h1>Cheese Chase</h1>
+        <p>Catch the falling cheese before they hit the ground!<br>Don't let Awesome Cheese Mouse go hungry.</p>
+        <button id="start-btn">START HUNT</button>
+        <div id="high-score-display">High Score: <span id="hi-score-val">0</span></div>
+    </div>
+
+    <div id="game-over-screen" class="screen hidden">
+        <h1 style="color: #ff4444;">GAME OVER</h1>
+        <p>You dropped the cheddar!</p>
+        <div class="stat" style="margin-bottom: 20px;">Final Score: <span id="final-score-val">0</span></div>
+        <button id="restart-btn">TRY AGAIN</button>
+    </div>
+</div>
+
+<script>
+    const container = document.getElementById('game-container');
+    const scoreEl = document.getElementById('score-val');
+    const livesEl = document.getElementById('lives-val');
+    const hiScoreEl = document.getElementById('hi-score-val');
+    const finalScoreEl = document.getElementById('final-score-val');
+    const startScreen = document.getElementById('start-screen');
+    const gameOverScreen = document.getElementById('game-over-screen');
+    
+    // Game State
+    let score = 0;
+    let lives = 3;
+    let gameActive = false;
+    let spawnRate = 1200; // ms between spawns
+    let fallSpeed = 3;    // pixels per frame
+    let spawnTimer;
+    let animationId;
+    let cheeseArray = [];
+
+    // Audio Context for SFX
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(freq, type, duration, vol) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }
+
+    const sfx = {
+        pop: () => playSound(600, 'sine', 0.1, 0.3),
+        miss: () => playSound(150, 'sawtooth', 0.3, 0.2),
+        start: () => playSound(400, 'triangle', 0.5, 0.3)
+    };
+
+    // Cheese Factory
+    function createCheese() {
+        if (!gameActive) return;
+
+        const cheese = document.createElement('div');
+        cheese.className = 'cheese';
+        const size = Math.random() * 40 + 40;
+        
+        // Simple SVG cheese wedge
+        cheese.innerHTML = `
+            <svg width="${size}" height="${size}" viewBox="0 0 100 100">
+                <path d="M10,90 L90,90 L90,10 Z" class="cheese-wedge"/>
+                <circle cx="40" cy="70" r="8" class="hole"/>
+                <circle cx="70" cy="80" r="5" class="hole"/>
+                <circle cx="75" cy="50" r="6" class="hole"/>
+            </svg>
+        `;
+
+        const x = Math.random() * (container.offsetWidth - size);
+        cheese.style.left = `${x}px`;
+        cheese.style.top = `-${size}px`;
+        
+        container.appendChild(cheese);
+
+        const cheeseObj = {
+            el: cheese,
+            y: -size,
+            speed: fallSpeed + (Math.random() * 2),
+            size: size
+        };
+
+        cheese.addEventListener('mousedown', (e) => catchCheese(cheeseObj, e));
+        cheese.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            catchCheese(cheeseObj, e);
+        });
+
+        cheeseArray.push(cheeseObj);
+    }
+
+    function catchCheese(obj, e) {
+        if (!gameActive) return;
+        sfx.pop();
+        score++;
+        scoreEl.innerText = score;
+        
+        // Difficulty increase
+        if (score % 5 === 0) {
+            fallSpeed += 0.2;
+            spawnRate = Math.max(400, spawnRate - 50);
+            clearInterval(spawnTimer);
+            spawnTimer = setInterval(createCheese, spawnRate);
+        }
+
+        removeCheese(obj);
+    }
+
+    function removeCheese(obj) {
+        if (obj.el.parentNode) {
+            container.removeChild(obj.el);
+        }
+        const index = cheeseArray.indexOf(obj);
+        if (index > -1) cheeseArray.splice(index, 1);
+    }
+
+    function update() {
+        if (!gameActive) return;
+
+        for (let i = cheeseArray.length - 1; i >= 0; i--) {
+            const cheese = cheeseArray[i];
+            cheese.y += cheese.speed;
+            cheese.el.style.top = `${cheese.y}px`;
+
+            // Hit bottom
+            if (cheese.y > container.offsetHeight) {
+                lives--;
+                sfx.miss();
+                updateLivesUI();
+                removeCheese(cheese);
+
+                if (lives <= 0) {
+                    endGame();
+                }
+            }
+        }
+        animationId = requestAnimationFrame(update);
+    }
+
+    function updateLivesUI() {
+        livesEl.innerText = "❤".repeat(lives);
+    }
+
+    function startGame() {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        sfx.start();
+        
+        score = 0;
+        lives = 3;
+        fallSpeed = 3;
+        spawnRate = 1200;
+        cheeseArray.forEach(c => container.removeChild(c.el));
+        cheeseArray = [];
+        
+        scoreEl.innerText = score;
+        updateLivesUI();
+        
+        gameActive = true;
+        startScreen.classList.add('hidden');
+        gameOverScreen.classList.add('hidden');
+        
+        spawnTimer = setInterval(createCheese, spawnRate);
+        update();
+    }
+
+    function endGame() {
+        gameActive = false;
+        clearInterval(spawnTimer);
+        cancelAnimationFrame(animationId);
+        
+        const hiScore = localStorage.getItem('cheeseHiScore') || 0;
+        if (score > hiScore) {
+            localStorage.setItem('cheeseHiScore', score);
+        }
+        
+        finalScoreEl.innerText = score;
+        gameOverScreen.classList.remove('hidden');
+        loadHighScore();
+    }
+
+    function loadHighScore() {
+        const hiScore = localStorage.getItem('cheeseHiScore') || 0;
+        hiScoreEl.innerText = hiScore;
+    }
+
+    // Events
+    document.getElementById('start-btn').onclick = startGame;
+    document.getElementById('restart-btn').onclick = startGame;
+    
+    // Initial Load
+    loadHighScore();
+
+</script>
+</body>
+</html>
