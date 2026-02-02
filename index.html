@@ -3,49 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Awesome Cheese Mouse</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Awesome Cheese Mouse | The Ultimate Rodent Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f0f1b;
+            --card-radius: 24px;
+            --cheese: #FFD700;
+            --text-light: #f0f0f0;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background Sparkles */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        header {
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 2.5rem;
+            letter-spacing: -1px;
+            color: var(--text-light);
+            text-transform: uppercase;
+        }
+
+        .logo span {
+            color: var(--cheese);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .card-container {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            perspective: 1000px;
+        }
+
+        .nav-card {
+            flex: 1;
+            text-decoration: none;
+            color: white;
+            height: 450px;
+            border-radius: var(--card-radius);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 40px;
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Specific Gradients */
+        .games-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .gallery-card { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); }
+        .faq-card { background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%); }
+
+        .nav-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .icon {
+            font-size: 5rem;
+            margin-bottom: auto;
+            transition: var(--transition);
+        }
+
+        .nav-card:hover .icon {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .card-content {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-card h2 {
+            font-weight: 800;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .nav-card p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        footer {
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.6;
+        }
+
+        .tiktok-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: var(--cheese);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .card-container {
+                gap: 20px;
+            }
+            .nav-card {
+                padding: 25px;
+                height: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .card-container {
+                flex-direction: column;
+            }
+            .nav-card {
+                height: 250px;
+                flex: none;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+            .icon {
+                font-size: 3.5rem;
+                margin-bottom: 10px;
+            }
+            .logo {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">Awesome Cheese Mouse</div>
-        <ul class="nav-links">
-            <li><a href="index.html" class="active">Home</a></li>
-            <li><a href="gallery.html">Mouse Gallery</a></li>
-            <li><a href="faq.html">FAQ</a></li>
-            <li><a href="games.html">Games</a></li>
-        </ul>
-    </nav>
 
-    <main class="hero">
-        <h1>Welcome to the Mouse Universe</h1>
-        <p>Explore hundreds of unique mice, play fun games, and discover the world of Awesome Cheese Mouse!</p>
-        <div class="hero-buttons">
-            <a href="gallery.html" class="btn btn-primary">View Gallery</a>
-            <a href="games.html" class="btn btn-secondary">Play Games</a>
+    <header>
+        <div class="logo">AWESOME <span>CHEESE</span> MOUSE</div>
+    </header>
+
+    <main>
+        <div class="card-container">
+            <a href="games.html" class="nav-card games-card">
+                <div class="icon">🎮</div>
+                <div class="card-content">
+                    <h2>MOUSE GAMES</h2>
+                    <p>Play fun mouse-themed games</p>
+                </div>
+            </a>
+
+            <a href="gallery.html" class="nav-card gallery-card">
+                <div class="icon">📷</div>
+                <div class="card-content">
+                    <h2>PHOTO GALLERY</h2>
+                    <p>Browse adorable mouse photos</p>
+                </div>
+            </a>
+
+            <a href="faq.html" class="nav-card faq-card">
+                <div class="icon">❓</div>
+                <div class="card-content">
+                    <h2>FAQ</h2>
+                    <p>Questions & Answers</p>
+                </div>
+            </a>
         </div>
     </main>
 
-    <section class="features">
-        <div class="feature-card">
-            <h3>Mouse Gallery</h3>
-            <p>Browse through 300+ unique mouse characters, each with their own personality and story.</p>
-            <a href="gallery.html">Explore Gallery</a>
-        </div>
-        <div class="feature-card">
-            <h3>Mini Games</h3>
-            <p>Fast-paced, fun games featuring your favorite mice. Challenge yourself and beat high scores!</p>
-            <a href="games.html">Play Now</a>
-        </div>
-        <div class="feature-card">
-            <h3>FAQ</h3>
-            <p>Questions about the mouse universe? Learn about our history and what's next.</p>
-            <a href="faq.html">Read FAQ</a>
-        </div>
-    </section>
-
     <footer>
-        <p>Awesome Cheese Mouse 2026 | Follow us on <a href="https://tiktok.com/@awesomecheesemouse">TikTok</a></p>
+        <p>Awesome Cheese Mouse © 2026</p>
+        <a href="https://tiktok.com/@awesomecheesemouse" class="tiktok-link">Follow us on TikTok</a>
     </footer>
+
 </body>
 </html>
