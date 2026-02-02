@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mouse Gallery - Awesome Cheese Mouse</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .gallery-header { text-align: center; padding: 3rem 5% 1rem; }
+        .gallery-header h1 { color: var(--cheese-yellow); font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .gallery-header p { opacity: 0.8; }
+        .gallery-stats { display: flex; justify-content: center; gap: 2rem; margin: 2rem 0; flex-wrap: wrap; }
+        .stat { text-align: center; background: rgba(255,255,255,0.05); padding: 1rem 2rem; border-radius: 15px; border: 1px solid rgba(255,215,0,0.2); }
+        .stat-number { font-size: 2rem; font-weight: bold; color: var(--cheese-yellow); }
+        .stat-label { opacity: 0.7; font-size: 0.9rem; }
+        .search-container { max-width: 500px; margin: 2rem auto; padding: 0 5%; }
+        .search-input { width: 100%; padding: 1rem 1.5rem; border-radius: 50px; border: 2px solid rgba(255,215,0,0.3); background: rgba(255,255,255,0.05); color: white; font-size: 1rem; }
+        .search-input:focus { outline: none; border-color: var(--cheese-yellow); }
+        .search-input::placeholder { color: rgba(255,255,255,0.5); }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1.5rem; padding: 2rem 5%; max-width: 1400px; margin: 0 auto; }
+        .mouse-card { background: rgba(255,255,255,0.05); border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,215,0,0.2); transition: all 0.3s; text-align: center; }
+        .mouse-card:hover { transform: translateY(-5px); border-color: var(--cheese-yellow); }
+        .mouse-image { width: 100%; aspect-ratio: 1; background: linear-gradient(135deg, #2a2a4a 0%, #1a1a2e 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem; }
+        .mouse-name { padding: 1rem; font-weight: bold; color: var(--cheese-yellow); }
+        .coming-soon-notice { text-align: center; padding: 3rem; background: rgba(255,215,0,0.1); border-radius: 20px; max-width: 600px; margin: 2rem auto; }
+        .coming-soon-notice h3 { color: var(--cheese-yellow); margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Awesome Cheese Mouse</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="gallery.html" class="active">Mouse Gallery</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="games.html">Games</a></li>
+        </ul>
+    </nav>
+
+    <div class="gallery-header">
+        <h1>Mouse Gallery</h1>
+        <p>Meet all the mice from the Awesome Cheese Mouse universe!</p>
+        <div class="gallery-stats">
+            <div class="stat"><div class="stat-number">300+</div><div class="stat-label">Current Mice</div></div>
+            <div class="stat"><div class="stat-number">1,000</div><div class="stat-label">Goal</div></div>
+        </div>
+    </div>
+
+    <div class="search-container">
+        <input type="text" class="search-input" placeholder="Search for a mouse..." id="searchInput">
+    </div>
+
+    <div class="coming-soon-notice">
+        <h3>Gallery Coming Soon!</h3>
+        <p>We're currently uploading all 300+ mice to the gallery. In the meantime, follow us on <a href="https://tiktok.com/@awesomecheesemouse" style="color: var(--cheese-yellow);">TikTok</a> to see them all!</p>
+    </div>
+
+    <div class="gallery-grid" id="galleryGrid">
+        <!-- Placeholder mice - will be replaced with real data -->
+        <div class="mouse-card"><div class="mouse-image">🐭</div><div class="mouse-name">Chester</div></div>
+        <div class="mouse-card"><div class="mouse-image">🐭</div><div class="mouse-name">Gouda</div></div>
+        <div class="mouse-card"><div class="mouse-image">🐭</div><div class="mouse-name">Brie</div></div>
+        <div class="mouse-card"><div class="mouse-image">🐭</div><div class="mouse-name">Cheddar</div></div>
+        <div class="mouse-card"><div class="mouse-image">🐭</div><div class="mouse-name">Mozzarella</div></div>
+        <div class="mouse-card"><div class="mouse-image">🐭</div><div class="mouse-name">Parmesan</div></div>
+        <div class="mouse-card"><div class="mouse-image">🐭</div><div class="mouse-name">Swiss</div></div>
+        <div class="mouse-card"><div class="mouse-image">🐭</div><div class="mouse-name">Colby</div></div>
+    </div>
+
+    <footer>
+        <p>Awesome Cheese Mouse 2026 | Follow us on <a href="https://tiktok.com/@awesomecheesemouse">TikTok</a></p>
+    </footer>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.mouse-card');
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            cards.forEach(card => {
+                const name = card.querySelector('.mouse-name').textContent.toLowerCase();
+                card.style.display = name.includes(term) ? 'block' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
