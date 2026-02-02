@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games - Awesome Cheese Mouse</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; padding: 2rem 5%; max-width: 1200px; margin: 0 auto; }
+        .game-card { background: rgba(255,255,255,0.05); border-radius: 20px; overflow: hidden; border: 2px solid rgba(255,215,0,0.3); transition: all 0.3s; }
+        .game-card:hover { transform: translateY(-10px); border-color: var(--cheese-yellow); box-shadow: 0 20px 40px rgba(255,215,0,0.2); }
+        .game-thumbnail { width: 100%; height: 200px; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem; }
+        .game-info { padding: 1.5rem; }
+        .game-info h3 { color: var(--cheese-yellow); margin-bottom: 0.5rem; font-size: 1.5rem; }
+        .game-info p { opacity: 0.8; margin-bottom: 1rem; }
+        .play-btn { display: inline-block; background: linear-gradient(90deg, var(--cheese-yellow), var(--cheese-orange)); color: #1a1a2e; padding: 0.8rem 2rem; border-radius: 50px; text-decoration: none; font-weight: bold; transition: transform 0.3s; }
+        .play-btn:hover { transform: scale(1.05); }
+        .page-title { text-align: center; padding: 3rem 0 1rem; }
+        .page-title h1 { color: var(--cheese-yellow); font-size: 2.5rem; }
+        .coming-soon { opacity: 0.5; }
+        .coming-soon .play-btn { background: #555; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Awesome Cheese Mouse</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="gallery.html">Mouse Gallery</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="games.html" class="active">Games</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-title">
+        <h1>Mini Games</h1>
+        <p>Fast-paced fun featuring your favorite mice!</p>
+    </div>
+
+    <div class="games-grid">
+        <div class="game-card">
+            <div class="game-thumbnail">🧀</div>
+            <div class="game-info">
+                <h3>Cheese Chase</h3>
+                <p>Click falling cheese before it hits the ground! Gets faster and more intense as you score higher. How long can you survive?</p>
+                <a href="games/cheese-chase.html" class="play-btn">Play Now</a>
+            </div>
+        </div>
+        <div class="game-card coming-soon">
+            <div class="game-thumbnail">🐭</div>
+            <div class="game-info">
+                <h3>Mouse Memory</h3>
+                <p>Match pairs of mice in this classic memory game. Beat the clock and unlock new difficulty levels!</p>
+                <span class="play-btn">Coming Soon</span>
+            </div>
+        </div>
+        <div class="game-card coming-soon">
+            <div class="game-thumbnail">🐱</div>
+            <div class="game-info">
+                <h3>Whack-a-Cat</h3>
+                <p>Protect the mice by whacking cats as they pop up! Quick reflexes required for higher levels.</p>
+                <span class="play-btn">Coming Soon</span>
+            </div>
+        </div>
+        <div class="game-card coming-soon">
+            <div class="game-thumbnail">🏃</div>
+            <div class="game-info">
+                <h3>Mouse Run</h3>
+                <p>Endless runner where you dodge obstacles and collect cheese. How far can your mouse go?</p>
+                <span class="play-btn">Coming Soon</span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Awesome Cheese Mouse 2026 | Follow us on <a href="https://tiktok.com/@awesomecheesemouse">TikTok</a></p>
+    </footer>
+</body>
+</html>
