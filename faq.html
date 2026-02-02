@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - Awesome Cheese Mouse</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .faq-container { max-width: 800px; margin: 0 auto; padding: 2rem 5%; }
+        .faq-item { background: rgba(255,255,255,0.05); border-radius: 15px; margin-bottom: 1rem; overflow: hidden; border: 1px solid rgba(255,215,0,0.2); }
+        .faq-question { padding: 1.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+        .faq-question:hover { background: rgba(255,215,0,0.1); }
+        .faq-answer { padding: 0 1.5rem; max-height: 0; overflow: hidden; transition: all 0.3s; }
+        .faq-item.active .faq-answer { max-height: 500px; padding: 1.5rem; padding-top: 0; }
+        .faq-item.active .faq-toggle { transform: rotate(45deg); }
+        .faq-toggle { font-size: 1.5rem; color: var(--cheese-yellow); transition: transform 0.3s; }
+        .page-title { text-align: center; padding: 3rem 0; }
+        .page-title h1 { color: var(--cheese-yellow); font-size: 2.5rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Awesome Cheese Mouse</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="gallery.html">Mouse Gallery</a></li>
+            <li><a href="faq.html" class="active">FAQ</a></li>
+            <li><a href="games.html">Games</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-title">
+        <h1>Frequently Asked Questions</h1>
+        <p>Everything you want to know about Awesome Cheese Mouse</p>
+    </div>
+
+    <div class="faq-container">
+        <div class="faq-item">
+            <div class="faq-question">What happened to the trading cards and products?<span class="faq-toggle">+</span></div>
+            <div class="faq-answer">The MOTD (Mouse of the Day) trading cards were a fun chapter in the Awesome Cheese Mouse story! Due to logistical challenges, we've decided to close the store and focus on what we love most: creating content and building the mouse universe. The site has evolved into a gallery and games hub where you can explore all the mice and have fun!</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Can I still get the trading cards?<span class="faq-toggle">+</span></div>
+            <div class="faq-answer">The trading cards are no longer available for purchase. We have some remaining stock, but we've decided not to continue selling them. If you managed to get some, they're now collector's items! Thank you to everyone who supported the card era.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Why did you take a break from posting?<span class="faq-toggle">+</span></div>
+            <div class="faq-answer">Life happens! Between managing the store, creating content, and other commitments, we needed some time to regroup and figure out the best direction for Awesome Cheese Mouse. This new website represents a fresh start focused on what matters most: the mice and the community!</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">How many mice are there?<span class="faq-toggle">+</span></div>
+            <div class="faq-answer">Currently there are over 300 unique mice in the Awesome Cheese Mouse universe, with a goal of reaching 1,000! Each mouse has their own personality and story. Check out the gallery to meet them all!</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Will there be new mice?<span class="faq-toggle">+</span></div>
+            <div class="faq-answer">Yes! The mouse universe continues to grow. Follow us on TikTok @awesomecheesemouse to see new mice as they're revealed!</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Can I suggest a mouse?<span class="faq-toggle">+</span></div>
+            <div class="faq-answer">We love hearing ideas from the community! Drop a comment on our TikTok videos with your mouse suggestions and who knows, you might see your idea come to life!</div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Awesome Cheese Mouse 2026 | Follow us on <a href="https://tiktok.com/@awesomecheesemouse">TikTok</a></p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.faq-question').forEach(q => {
+            q.addEventListener('click', () => q.parentElement.classList.toggle('active'));
+        });
+    </script>
+</body>
+</html>
