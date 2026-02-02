@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cheese Runner | Awesome Cheese Mouse</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ffcc00;
+            --secondary: #ff9900;
+            --danger: #ff4444;
+            --glass: rgba(255, 255, 255, 0.15);
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; background: #fdf5e6;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        #game-container {
+            position: relative; width: 100vw; height: 100vh;
+            background: linear-gradient(to bottom, #ffedbc, #edc393);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        canvas { display: block; z-index: 1; touch-action: none; }
+
+        /* UI Styling */
+        .ui-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 10;
+        }
+
+        .hud {
+            padding: 30px; display: flex; justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .stat-card {
+            background: var(--glass); backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 25px; border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .label { font-size: 0.7rem; font-weight: 700; color: #5d4037; text-transform: uppercase; letter-spacing: 1px; }
+        .value { font-family: 'Fredoka One'; font-size: 2rem; color: #5d4037; }
+
+        /* Overlays */
+        .overlay {
+            position: absolute; inset: 0; background: rgba(93, 64, 55, 0.8);
+            backdrop-filter: blur(10px); display: flex; align-items: center;
+            justify-content: center; z-index: 100; transition: opacity 0.4s;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95); padding: 50px;
+            border-radius: 40px; text-align: center; width: 80%; max-width: 450px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 { font-family: 'Fredoka One'; font-size: 3.5rem; color: #5d4037; margin: 0; line-height: 1; }
+        
+        .btn {
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            border: none; padding: 20px 50px; border-radius: 50px;
+            color: white; font-weight: 800; font-size: 1.5rem;
+            cursor: pointer; pointer-events: auto; transition: 0.2s;
+            margin-top: 30px; box-shadow: 0 10px 20px rgba(255, 153, 0, 0.3);
+        }
+
+        .btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 15px 30px rgba(255, 153, 0, 0.4); }
+
+        .hidden { opacity: 0; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div class="ui-layer">
+        <div class="hud">
+            <div class="stat-card">
+                <div class="label">Distance</div>
+                <div id="distance" class="value">0m</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Cheese</div>
+                <div id="score" class="value">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="start-screen" class="overlay">
+        <div class="glass-panel">
+            <h1>CHEESE<br>RUNNER</h1>
+            <p style="color: #8d6e63; margin-top: 15px;">Tap to jump & double jump!</p>
+            <button class="btn" onclick="startGame()">Start Running</button>
+        </div>
+    </div>
+
+    <div id="game-over" class="overlay hidden">
+        <div class="glass-panel">
+            <h1 style="color: var(--danger);">SNAPPED!</h1>
+            <p id="final-stats" style="font-size: 1.2rem; color: #5d4037; margin: 20px 0;"></p>
+            <button class="btn" onclick="startGame()">Run Again</button>
+        </div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+</div>
+
+<script>
+/** @type {HTMLCanvasElement} */
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+let w, h, score = 0, distance = 0, gameActive = false;
+let gameSpeed = 6;
+let particles = [], obstacles = [], collectibles = [], popups = [];
+
+// Parallax Layers
+let layers = [
+    { x: 0, speed: 0.2, color: '#f7e1b5' }, // Background walls
+    { x: 0, speed: 1.0, color: '#e0c09d' }, // Cabinets
+    { x: 0, speed: 2.5, color: '#d2a679' }  // Baseboards/Floor
+];
+
+const mouse = {
+    x: 150, y: 0,
+    w: 60, h: 50,
+    vy: 0,
+    gravity: 0.8,
+    jumpStrength: -16,
+    jumps: 0,
+    rotation: 0,
+    frame: 0
+};
+
+const resize = () => {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+    mouse.y = h - 150;
+};
+window.addEventListener('resize', resize);
+resize();
+
+// Controls
+const triggerJump = () => {
+    if (!gameActive) return;
+    if (mouse.jumps < 2) {
+        mouse.vy = mouse.jumpStrength;
+        mouse.jumps++;
+        createParticles(mouse.x, mouse.y + mouse.h, '#fff', 10);
+        if (mouse.jumps === 2) spawnPopup("DOUBLE JUMP!", mouse.x, mouse.y - 50, "#ffcc00");
+    }
+};
+window.addEventListener('keydown', (e) => { if(e.code === 'Space') triggerJump(); });
+canvas.addEventListener('touchstart', (e) => { e.preventDefault(); triggerJump(); });
+canvas.addEventListener('mousedown', triggerJump);
+
+function createParticles(x, y, color, count) {
+    for(let i=0; i<count; i++) {
+        particles.push({
+            x, y,
+            vx: (Math.random() - 0.5) * 10,
+            vy: (Math.random() - 0.5) * 10,
+            life: 1,
+            size: Math.random() * 5,
+            color
+        });
+    }
+}
+
+function spawnPopup(text, x, y, color) {
+    popups.push({ text, x, y, life: 1, color });
+}
+
+function startGame() {
+    score = 0; distance = 0; gameSpeed = 6;
+    obstacles = []; collectibles = []; particles = [];
+    mouse.y = h - 150; mouse.vy = 0; mouse.jumps = 0;
+    gameActive = true;
+    document.getElementById('start-screen').classList.add('hidden');
+    document.getElementById('game-over').classList.add('hidden');
+    requestAnimationFrame(loop);
+}
+
+function drawMouse() {
+    ctx.save();
+    ctx.translate(mouse.x, mouse.y);
+    
+    // Jump Rotation
+    if (mouse.y < h - 155) {
+        mouse.rotation += 0.1;
+        ctx.rotate(mouse.rotation);
+    } else {
+        mouse.rotation = 0;
+        // Running Wobble
+        mouse.frame += 0.2;
+        ctx.translate(0, Math.sin(mouse.frame) * 5);
+    }
+
+    // Body (Gradient Fur)
+    const grad = ctx.createRadialGradient(0, 0, 5, 0, 0, 30);
+    grad.addColorStop(0, '#aaa'); grad.addColorStop(1, '#666');
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.ellipse(0, 0, 30, 25, 0, 0, Math.PI*2); ctx.fill();
+
+    // Ears
+    ctx.fillStyle = '#ffb3ba';
+    ctx.beginPath(); ctx.arc(-15, -20, 12, 0, 7); ctx.arc(5, -20, 12, 0, 7); ctx.fill();
+
+    // Face
+    ctx.fillStyle = 'white';
+    ctx.beginPath(); ctx.arc(15, -5, 5, 0, 7); ctx.fill(); // Eye
+    ctx.fillStyle = 'black';
+    ctx.beginPath(); ctx.arc(17, -5, 2, 0, 7); ctx.fill(); // Pupil
+    ctx.fillStyle = '#ff80ab';
+    ctx.beginPath(); ctx.arc(28, 0, 4, 0, 7); ctx.fill(); // Nose
+
+    ctx.restore();
+}
+
+function drawKitchen() {
+    // Parallax
+    layers.forEach((layer, idx) => {
+        layer.x -= gameSpeed * layer.speed;
+        if (layer.x <= -w) layer.x = 0;
+        
+        ctx.fillStyle = layer.color;
+        // Draw two panels for seamless loop
+        if (idx === 1) { // Cabinets
+            for(let i=0; i<w*2; i+=200) {
+                ctx.fillRect(layer.x + i, h - 350, 180, 200);
+            }
+        } else if (idx === 2) { // Floor
+            ctx.fillRect(0, h - 100, w, 100);
+        } else { // Background details
+            ctx.fillRect(0, 0, w, h);
+        }
+    });
+}
+
+function loop() {
+    if (!gameActive) return;
+    ctx.clearRect(0,0,w,h);
+
+    drawKitchen();
+
+    // Physics
+    mouse.vy += mouse.gravity;
+    mouse.y += mouse.vy;
+    if (mouse.y > h - 150) {
+        mouse.y = h - 150;
+        mouse.vy = 0;
+        mouse.jumps = 0;
+        // Dust particles while running
+        if(Math.random() > 0.8) createParticles(mouse.x - 20, h - 100, '#d2a679', 1);
+    }
+
+    distance += Math.floor(gameSpeed / 10);
+    gameSpeed += 0.001;
+
+    // Spawn Logic
+    if (Math.random() < 0.01) {
+        obstacles.push({ x: w + 100, y: h - 140, w: 50, h: 40, type: 'trap' });
+    }
+    if (Math.random() < 0.02) {
+        collectibles.push({ x: w + 100, y: h - 200 - Math.random() * 200, size: 20, type: Math.random() > 0.9 ? 'gold' : 'normal' });
+    }
+
+    // Process Obstacles
+    obstacles.forEach((ob, i) => {
+        ob.x -= gameSpeed;
+        ctx.fillStyle = '#5d4037';
+        ctx.fillRect(ob.x, ob.y, ob.w, ob.h); // Trap base
+        ctx.strokeStyle = '#999'; ctx.lineWidth = 3;
+        ctx.strokeRect(ob.x + 5, ob.y - 10, ob.w - 10, 10); // Spring
+
+        // Collision
+        if (Math.abs(ob.x - mouse.x) < 40 && Math.abs(ob.y - mouse.y) < 40) {
+            endGame();
+        }
+        if (ob.x < -100) obstacles.splice(i, 1);
+    });
+
+    // Process Collectibles
+    collectibles.forEach((c, i) => {
+        c.x -= gameSpeed;
+        const bounce = Math.sin(Date.now() * 0.01) * 10;
+        ctx.fillStyle = c.type === 'gold' ? '#ffd700' : '#ffcc00';
+        ctx.beginPath(); ctx.arc(c.x, c.y + bounce, c.size, 0, 7); ctx.fill();
+        // Holes in cheese
+        ctx.fillStyle = 'rgba(0,0,0,0.1)';
+        ctx.beginPath(); ctx.arc(c.x - 5, c.y + bounce - 5, 4, 0, 7); ctx.fill();
+
+        // Collection
+        if (Math.abs(c.x - mouse.x) < 50 && Math.abs(c.y + bounce - mouse.y) < 50) {
+            const val = c.type === 'gold' ? 50 : 10;
+            score += val;
+            spawnPopup(`+${val}`, c.x, c.y, c.type === 'gold' ? '#ffd700' : '#ff9900');
+            createParticles(c.x, c.y, '#ffcc00', 15);
+            collectibles.splice(i, 1);
+        }
+        if (c.x < -100) collectibles.splice(i, 1);
+    });
+
+    drawMouse();
+
+    // Particles & Popups
+    particles.forEach((p, i) => {
+        p.x -= gameSpeed * 0.5; p.y += p.vy; p.life -= 0.02;
+        ctx.globalAlpha = p.life; ctx.fillStyle = p.color;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, 7); ctx.fill();
+        if(p.life <= 0) particles.splice(i, 1);
+    });
+    ctx.globalAlpha = 1;
+
+    popups.forEach((p, i) => {
+        p.y -= 2; p.life -= 0.02;
+        ctx.font = 'bold 24px Fredoka One';
+        ctx.fillStyle = p.color; ctx.globalAlpha = p.life;
+        ctx.fillText(p.text, p.x, p.y);
+        if(p.life <= 0) popups.splice(i, 1);
+    });
+    ctx.globalAlpha = 1;
+
+    document.getElementById('score').innerText = score;
+    document.getElementById('distance').innerText = distance + 'm';
+
+    requestAnimationFrame(loop);
+}
+
+function endGame() {
+    gameActive = false;
+    document.getElementById('game-over').classList.remove('hidden');
+    document.getElementById('final-stats').innerText = `Distance: ${distance}m | Cheese: ${score}`;
+}
+</script>
+</body>
+</html>
