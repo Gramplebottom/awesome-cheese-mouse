@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mouse Merch | Awesome Cheese Mouse</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f0f1b;
+            --card-radius: 24px;
+            --cheese: #FFD700;
+            --text-light: #f0f0f0;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        header {
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .logo a {
+            font-weight: 800;
+            font-size: 2rem;
+            letter-spacing: -1px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .logo a span {
+            color: var(--cheese);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            padding: 10px 20px 30px;
+        }
+
+        nav a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+            padding: 5px 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--cheese);
+            border-bottom-color: var(--cheese);
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .page-title h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+
+        .page-title h1 span {
+            color: var(--cheese);
+        }
+
+        .page-subtitle {
+            text-align: center;
+            opacity: 0.7;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        main {
+            flex: 1;
+            padding: 0 20px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+
+        .product-image {
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
+        }
+
+        .product-image.tshirt {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .product-image.hoodie {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .product-image.stickers {
+            background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+        }
+
+        .product-info {
+            padding: 25px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-info h3 {
+            font-weight: 800;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .product-info p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+            flex: 1;
+        }
+
+        .product-price {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--cheese);
+            margin-bottom: 15px;
+        }
+
+        .buy-btn {
+            display: inline-block;
+            background: var(--cheese);
+            color: #0f0f1b;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            text-align: center;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .buy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .info-banner {
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+            background: rgba(255, 215, 0, 0.08);
+            border-radius: var(--card-radius);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+        }
+
+        .info-banner p {
+            opacity: 0.8;
+            font-size: 0.95rem;
+        }
+
+        .info-banner p strong {
+            color: var(--cheese);
+        }
+
+        footer {
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.6;
+        }
+
+        .tiktok-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: var(--cheese);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media (max-width: 992px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            .page-title h1 {
+                font-size: 1.8rem;
+            }
+            nav {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo"><a href="index.html">AWESOME <span>CHEESE</span> MOUSE</a></div>
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="games.html">Games</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="faq.html">FAQ</a>
+        <a href="shop.html" class="active">Merch</a>
+    </nav>
+
+    <main>
+        <div class="page-title">
+            <h1>MOUSE <span>MERCH</span></h1>
+        </div>
+        <p class="page-subtitle">Rep the cheesiest brand on the internet</p>
+
+        <div class="products-grid">
+            <div class="product-card">
+                <div class="product-image tshirt">&#128085;</div>
+                <div class="product-info">
+                    <h3>Cheese Mouse T-Shirt</h3>
+                    <p>Premium cotton tee featuring the iconic Awesome Cheese Mouse logo. Soft, comfy, and cheesy!</p>
+                    <div class="product-price">$24.99</div>
+                    <a href="https://buy.stripe.com/test_9B68wI9LTeG02BS1Bj0x200" class="buy-btn" target="_blank">Buy Now</a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image hoodie">&#129509;</div>
+                <div class="product-info">
+                    <h3>Cheese Mouse Hoodie</h3>
+                    <p>Cozy pullover hoodie with the Awesome Cheese Mouse design. Perfect for cheese lovers!</p>
+                    <div class="product-price">$39.99</div>
+                    <a href="https://buy.stripe.com/test_eVq7sEaPXdBW1x04Nv0x201" class="buy-btn" target="_blank">Buy Now</a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image stickers">&#127912;</div>
+                <div class="product-info">
+                    <h3>Sticker Pack</h3>
+                    <p>Pack of 10 vinyl stickers featuring cute mouse and cheese designs. Waterproof and durable!</p>
+                    <div class="product-price">$9.99</div>
+                    <a href="https://buy.stripe.com/test_aFa5kw5vD2Xi1x0dk10x202" class="buy-btn" target="_blank">Buy Now</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-banner">
+            <p><strong>Secure checkout powered by Stripe.</strong> All payments are encrypted and secure. Ships to the United States.</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>Awesome Cheese Mouse &copy; 2026</p>
+        <a href="https://tiktok.com/@awesomecheesemouse" class="tiktok-link">Follow us on TikTok</a>
+    </footer>
+</body>
+</html>
