@@ -405,14 +405,14 @@
             });
         });
 
-        // Replace broken Google Drive image URLs with working placeholders
-    const brokenImages = document.querySelectorAll('img[src*="drive.google.com/uc?export=view"]');
-        brokenImages.forEach((img, index) => {
-        img.src = `https://via.placeholder.com/400x400/2a2a4a/FFD700?text=Mouse+${index+1}`;
-        const nameElem = img.closest('.mouse-card').querySelector('.mouse-name');
-        if (nameElem && nameElem.textContent.includes('Mouse Inventor')) {
-            nameElem.textContent = `Mouse #${index+1}`;
-        }
+    // Replace broken image tags with emoji text
+    const brokenImages = document.querySelectorAll('img[src*="drive.google.com"]');
+    brokenImages.forEach((img, index) => {
+        const emojiDiv = document.createElement('div');
+        emojiDiv.style.cssText = 'width: 100%; aspect-ratio: 1; background: linear-gradient(135deg, #2a2a4a 0%, #1a1a2e 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;';
+        emojiDiv.textContent = '🐭';
+        img.parentElement.replaceChild(emojiDiv, img);
+       }
      `;
     }
     </script>
