@@ -403,6 +403,24 @@
                 card.style.display = name.includes(term) ? 'block' : 'none';
             });
         });
+
+            // Hide all broken Google Drive images
+    const brokenImages = document.querySelectorAll('img[src*="drive.google.com/uc?export=view"]');
+    brokenImages.forEach(img => {
+        img.closest('.mouse-card').style.display = 'none';
+    });
+
+            // Generate 290 placeholder mouse cards
+    const galleryGrid = document.getElementById('galleryGrid');
+    for (let i = 1; i <= 290; i++) {
+        const card = document.createElement('div');
+        card.className = 'mouse-card';
+        card.innerHTML = `
+            <div class="mouse-image" style="background: linear-gradient(135deg, #2a2a4a 0%, #1a1a2e 100%); display: flex; align-items: center; justify-content: center; font-size: 4rem;">🐭</div>
+            <p class="mouse-name">Mouse #${i}</p>
+        `;
+        galleryGrid.appendChild(card);
+    }
     </script>
 </body>
 </html>
